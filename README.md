@@ -35,6 +35,9 @@ As developers, we’re excited about this project because it:
 ---
 
 ## Data Flow
+<img width="706" alt="PNG image" src="https://github.com/user-attachments/assets/bc7e5202-a88c-40db-972a-05f896c8cbbd" />
+
+---
 
 ## 🧑‍💻 User Story Summary
 
