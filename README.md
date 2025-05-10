@@ -81,3 +81,39 @@ As developers, we’re excited about this project because it:
   "followers": [ObjectId],
   "following": [ObjectId]
 }
+```
+
+### Boards
+```json
+{
+  "boardID": ObjectId,
+  "userID": ObjectId,
+  "title": String,
+  "description": String,
+  "isPublic": Boolean,
+  "images": [ObjectId],
+  "createdAt": Date
+}
+```
+
+### Images
+```json
+{
+  "imageID": ObjectId,
+  "boardID": ObjectId,
+  "userID": ObjectId,
+  "imageURL": String,
+  "caption": String,
+  "tags": [String],
+  "likes": [ObjectId],
+  "comments": [
+    {
+      "userID": ObjectId,
+      "comment": String,
+      "timestamp": Date
+    }
+  ],
+  "createdAt": Date
+}
+```
+
