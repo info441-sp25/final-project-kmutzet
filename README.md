@@ -30,9 +30,11 @@ As developers, we’re excited about this project because it:
 - **Authentication:** Azure
 - **API Design:** RESTful routes
 
-> Architecture diagram will be provided.
+<img width="782" alt="PNG image" src="https://github.com/user-attachments/assets/48d43d32-649b-42b7-a521-6948571819f9" />
 
 ---
+
+## Data Flow
 
 ## 🧑‍💻 User Story Summary
 
@@ -49,8 +51,7 @@ As developers, we’re excited about this project because it:
 | P2       | As a user, I want to follow users and see their new boards on my feed      | Simple follow schema + feed endpoint |
 
 ---
-
-## 📡 Available Endpoints
+### Available Endpoints
 
 - `POST /user/register` – Create new user account  
 - `POST /user/login` – Authenticate and return user data  
