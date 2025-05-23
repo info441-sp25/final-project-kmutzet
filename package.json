@@ -9,6 +9,7 @@
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "debug": "~2.6.9",
+    "dotenv": "^16.5.0",
     "express": "^4.21.0",
     "express-session": "^1.18.1",
     "microsoft-identity-express": "^1.0.0-beta",
