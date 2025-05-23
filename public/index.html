@@ -1,13 +1,53 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-  <title>Express</title>
+  <meta charset="UTF-8">
+  <title>InspoNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="javascripts/api_version.js"></script>
+  <script src="javascripts/utils.js"></script>
+  <script src="javascripts/identity.js"></script>
+  <script src="javascripts/index.js"></script>
 </head>
 
-<body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
+<body onload="init()">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm px-4">
+    <span class="navbar-brand mb-0 h1">🐝 InspoNest</span>
+    <div id="identity_div" class="ms-auto">loading...</div>
+  </nav>
+
+  <div class="container mt-5 pt-4">
+    <div id="errorInfo" class="alert alert-danger fade show" role="alert" style="opacity:0"></div>
+
+    <section class="mb-5">
+      <h2 class="mb-3">Posts</h2>
+      <button class="btn btn-outline-primary mb-3" onclick="loadPosts()">Refresh Posts</button>
+      <div id="posts_box"></div>
+    </section>
+
+    <hr class="my-5">
+
+    <section id="make_post_div" class="d-none">
+      <h3>Post a New Website</h3>
+      <p class="text-muted">Share a reason and link</p>
+
+      <div class="mb-3">
+        <label for="descriptionInput" class="form-label">Why are you sharing this?</label>
+        <input type="text" class="form-control" id="descriptionInput" placeholder="Write a short reason..." />
+      </div>
+
+      <div class="mb-3">
+        <label for="urlInput" class="form-label">Website URL</label>
+        <input type="text" class="form-control" id="urlInput" placeholder="https://example.com" />
+      </div>
+
+      <button class="btn btn-primary" onclick="postUrl()">Post</button>
+      <span id="postStatus" class="ms-3"></span>
+      <div id="url_previews" class="mt-3"></div>
+    </section>
+  </div>
 </body>
 
 </html>
