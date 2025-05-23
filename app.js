@@ -8,7 +8,9 @@ import WebAppAuthProvider from 'msal-node-wrapper';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import models from './models.js';
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
+
 const secret = process.env.SECRET_KEY;
 
 
