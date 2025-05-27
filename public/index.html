@@ -24,23 +24,23 @@
     <section class="mb-5">
       <h2 class="mb-3">Posts</h2>
       <button class="btn btn-outline-primary mb-3" onclick="loadPosts()">Refresh Posts</button>
-      <div id="posts_box"></div>
+      <div id="posts_box" class="posts-container"></div>
     </section>
 
     <hr class="my-5">
 
     <section id="make_post_div" class="d-none">
-      <h3>Post a New Website</h3>
+      <h3>Post a Board!</h3>
       <p class="text-muted">Share a reason and link</p>
 
       <div class="mb-3">
         <label for="descriptionInput" class="form-label">Why are you sharing this?</label>
-        <input type="text" class="form-control" id="descriptionInput" placeholder="Write a short reason..." />
+        <input type="text" class="form-control" id="descriptionInput" placeholder="Why are you posting this?">
       </div>
 
       <div class="mb-3">
-        <label for="urlInput" class="form-label">Website URL</label>
-        <input type="text" class="form-control" id="urlInput" placeholder="https://example.com" />
+        <label for="imageInput" class="form-label">Upload Image</label>
+        <input type="file" class="form-control" id="imageInput" accept="image/*" />
       </div>
 
       <button class="btn btn-primary" onclick="postUrl()">Post</button>

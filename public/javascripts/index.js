@@ -1,11 +1,30 @@
 async function init(){
     let urlInput = document.getElementById("urlInput");
-    urlInput.onkeyup = previewUrl;
-    urlInput.onchange = previewUrl;
-    urlInput.onclick = previewUrl;
+    if (urlInput) {
+        urlInput.onkeyup = previewUrl;
+        urlInput.onchange = previewUrl;
+        urlInput.onclick = previewUrl;
+    }
 
     await loadIdentity();
     loadPosts();
+}
+
+
+async function uploadImageToCloudinary(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "inspo_preset"); // your unsigned preset name
+
+  const res = await fetch("https://api.cloudinary.com/v1_1/dumon31ph/image/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) throw new Error("Cloudinary upload failed");
+
+  const data = await res.json();
+  return data.secure_url; // This is the public URL of the image
 }
 
 async function loadPosts(){
@@ -13,57 +32,119 @@ async function loadPosts(){
     let postsJson = await fetchJSON(`api/${apiVersion}/posts`)
     
     let postsHtml = postsJson.map(postInfo => {
-        return `
-        <div class="post">
-            ${escapeHTML(postInfo.description)}
-            ${postInfo.htmlPreview}
-            <div><a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a>, ${escapeHTML(postInfo.created_date)}</div>
-            <div class="post-interactions">
-                <div>
-                    <span title="${postInfo.likes? escapeHTML(postInfo.likes.join(", ")) : ""}"> ${postInfo.likes ? `${postInfo.likes.length}` : 0} likes </span> &nbsp; &nbsp; 
-                    <span class="heart-button-span ${myIdentity? "": "d-none"}">
-                        ${postInfo.likes && postInfo.likes.includes(myIdentity) ? 
-                            `<button class="heart_button" onclick='unlikePost("${postInfo.id}")'>&#x2665;</button>` : 
-                            `<button class="heart_button" onclick='likePost("${postInfo.id}")'>&#x2661;</button>`} 
-                    </span>
-                </div>
-                <br>
-                <button onclick='toggleComments("${postInfo.id}")'>View/Hide comments</button>
-                <div id='comments-box-${postInfo.id}' class="comments-box d-none">
-                    <button onclick='refreshComments("${postInfo.id}")')>refresh comments</button>
-                    <div id='comments-${postInfo.id}'></div>
-                    <div class="new-comment-box ${myIdentity? "": "d-none"}">
-                        New Comment:
-                        <textarea type="textbox" id="new-comment-${postInfo.id}"></textarea>
-                        <button onclick='postComment("${postInfo.id}")'>Post Comment</button>
-                    </div>
+    const imageHTML = postInfo.imageURLs?.map(url => 
+        `<img src="${escapeHTML(url)}" alt="post image" class="img-fluid mb-2">`
+    ).join("") || "";
+
+    return `
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <p class="card-text flex-grow-1 me-2">${escapeHTML(postInfo.description)}</p>
+                ${postInfo.username === myIdentity 
+                    ? `<button class="delete-button" onclick='deletePost("${postInfo.id}")'>&times;</button>` 
+                    : ""}
+            </div>
+            ${imageHTML}
+            ${postInfo.htmlPreview || ""}
+            <p class="text-muted small">
+                <a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a>, ${escapeHTML(postInfo.created_date)}
+            </p>
+
+            <div class="d-flex align-items-center">
+                <span class="me-2" title="${postInfo.likes ? escapeHTML(postInfo.likes.join(", ")) : ""}">
+                    ${postInfo.likes ? `${postInfo.likes.length}` : 0} likes
+                </span>
+
+                <span class="${myIdentity ? '' : 'd-none'}">
+                    ${postInfo.likes && postInfo.likes.includes(myIdentity)
+                    ? `<button class="btn btn-sm btn-outline-danger" onclick='unlikePost("${postInfo.id}")'>&#x2665;</button>`
+                    : `<button class="btn btn-sm btn-outline-secondary" onclick='likePost("${postInfo.id}")'>&#x2661;</button>`}
+                </span>
+            </div>
+
+            <button class="btn btn-link mt-2" onclick='toggleComments("${postInfo.id}")'>View/Hide comments</button>
+            <div id='comments-box-${postInfo.id}' class="comments-box d-none">
+                <button class="btn btn-sm btn-secondary mb-2" onclick='refreshComments("${postInfo.id}")'>Refresh comments</button>
+                <div id='comments-${postInfo.id}'></div>
+                <div class="new-comment-box ${myIdentity ? "" : "d-none"}">
+                    <textarea class="form-control mb-2" id="new-comment-${postInfo.id}" placeholder="Write a comment..."></textarea>
+                    <button class="btn btn-primary btn-sm" onclick='postComment("${postInfo.id}")'>Post Comment</button>
                 </div>
             </div>
-        </div>`
-    }).join("\n");
+        </div>
+    </div>`;
+}).join("");
+
     document.getElementById("posts_box").innerHTML = postsHtml;
 }
 
-async function postUrl(){
-    document.getElementById("postStatus").innerHTML = "sending data..."
-    let url = document.getElementById("urlInput").value;
-    let description = document.getElementById("descriptionInput").value;
+function makeUrlPreview(imageUrl) {
+    return `<img src="${escapeHTML(imageUrl)}" alt="Image preview" class="img-fluid"/>`;
+}
 
-    try{
-        await fetchJSON(`api/${apiVersion}/posts`, {
-            method: "POST",
-            body: {url: url, description: description}
-        })
-    }catch(error){
-        document.getElementById("postStatus").innerText = "Error"
-        throw(error)
+async function deletePost(postID) {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+        const res = await fetch(`api/${apiVersion}/posts`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ postID }),
+        });
+
+        const result = await res.json();
+        if (result.status === "success") {
+            alert("Post deleted successfully.");
+            loadPosts(); // Reload posts
+        } else {
+            alert("Failed to delete post: " + result.error);
+        }
+    } catch (error) {
+        console.error("Error deleting post:", error);
+        alert("An unexpected error occurred.");
     }
-    document.getElementById("urlInput").value = "";
-    document.getElementById("descriptionInput").value = "";
-    document.getElementById("url_previews").innerHTML = "";
-    document.getElementById("postStatus").innerHTML = "successfully uploaded"
-    loadPosts();
-    
+}
+
+
+
+async function postUrl() {
+  const description = document.getElementById("descriptionInput").value;
+  const imageFile = document.getElementById("imageInput").files[0];
+
+  if (!imageFile || !description) {
+    alert("Both description and image are required.");
+    return;
+  }
+
+  try {
+    const imageUrl = await uploadImageToCloudinary(imageFile);
+    let htmlPreview = makeUrlPreview(imageUrl);
+    const response = await fetch(`api/${apiVersion}/posts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            description: description,
+            htmlPreview: htmlPreview,
+            imageURLs: [imageUrl],
+            boardID: "default",
+        }),
+    });
+
+
+    const data = await response.json();
+    if (data.status === "success") {
+      document.getElementById("postStatus").textContent = "✅ Posted!";
+      loadPosts(); // refresh posts
+    } else {
+      document.getElementById("postStatus").textContent = "❌ Error posting.";
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById("postStatus").textContent = "❌ Error uploading image.";
+  }
 }
 
 
@@ -163,12 +244,16 @@ async function refreshComments(postID){
 }
 
 async function postComment(postID){
+
     let newComment = document.getElementById(`new-comment-${postID}`).value;
 
     let responseJson = await fetchJSON(`api/${apiVersion}/comments`, {
         method: "POST",
         body: {postID: postID, newComment: newComment}
     })
-    
+    if (!newComment.trim()) {
+        alert("Comment cannot be empty.");
+        return;
+    }
     refreshComments(postID);
 }

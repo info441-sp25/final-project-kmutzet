@@ -10,12 +10,25 @@ async function main() {
 
     //schema
     const postSchema = new mongoose.Schema({
-        url: String,
+        mediaUrl: String,
         description: String,
         created_date: { type: Date, default: Date.now },
         username: String,
         likes: [String],
+        image: {
+            public_id: String,
+            url: String,
+        },
+        imageURLs: {
+            type: [String],    // array of strings (URLs)
+            default: [],
+        },
+        htmlPreview: {
+            type: String,
+            default: '',
+        }
     });
+
 
     models.Post = mongoose.model('Post', postSchema);
 

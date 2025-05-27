@@ -12,9 +12,11 @@ router.post("/", async function (req, res, next) {
             console.log("Request username is " + req.session.account.username);
 
             const newPost = new req.models.Post({
-                url: req.body.url,
+                imageURLs: req.body.imageURLs, 
                 description: req.body.description,
-                username: req.session.account.username,  
+                htmlPreview: req.body.htmlPreview,
+                username: req.session.account.username,
+                boardID: req.body.boardID,
                 created_date: new Date(),
             });
 
@@ -48,7 +50,10 @@ router.get("/", async function (req, res, next) {
                     return {
                         description: post.description,
                         username: post.username,
-                        htmlPreview: (await getURLPreview(post.url)).toString(), id: id, created_date: post.created_date, likes: post.likes
+                        imageURLs: post.imageURLs,
+                        id: post._id,
+                        created_date: post.created_date,
+                        likes: post.likes,
                     };
                 } catch (error) {
                     console.log("Error making the post is" + error);
@@ -67,27 +72,30 @@ router.get("/", async function (req, res, next) {
 router.delete("/", async function (req, res, next) {
     if (req.session.isAuthenticated) {
         try {
-            console.log("Request's body is " + req.body.postID);
-            let query = {};
-            query._id = req.body.postID
+            const postID = req.body.postID;
+            const post = await req.models.Post.findById(postID);
 
-            let commentQuery = {};
-            commentQuery.post = req.body.postID
-            // delete the post
-            await req.models.Post.deleteOne(query);
-            
-            // delete all the comments TODO come back after comment controller is made
-            await req.models.Comment.deleteMany(commentQuery);
+            if (!post) {
+                return res.status(404).json({ status: "error", error: "Post not found" });
+            }
 
-            res.json({"status": "success"})
+            if (post.username !== req.session.account.username) {
+                return res.status(403).json({ status: "error", error: "Unauthorized to delete this post" });
+            }
+
+            await req.models.Post.deleteOne({ _id: postID });
+            await req.models.Comment.deleteMany({ post: postID });
+
+            res.json({ status: "success" });
         } catch (error) {
-           console.log("Error in post is " + error);
-            res.status(500).json({"status": "error", "error": "you can only delete your own posts"})
+            console.log("Error in post deletion: " + error);
+            res.status(500).json({ status: "error", error: "Server error during deletion" });
         }
     } else {
-        return res.status(401).json({ status: "error", error: "not logged in" });
+        return res.status(401).json({ status: "error", error: "Not logged in" });
     }
 });
+
 
 
 export default router;
