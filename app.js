@@ -19,7 +19,7 @@ import usersRouter from './routes/api/v1/users.js';
 
 const authConfig = {
     auth: {
-        clientId: "41429171-0e61-42d3-b009-ce37a6e8e639",
+        clientId: "2833ad02-2877-4752-a4c9-a6c485ed4be9",
         authority: "https://login.microsoftonline.com/f6b6dd5b-f02f-441a-99a0-162ac5060bd2",
         clientSecret: secret,
         redirectUri: "/redirect"
