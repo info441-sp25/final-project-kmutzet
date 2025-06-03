@@ -46,9 +46,6 @@ a:focus {
 
 /* Individual Post Card */
 .post {
-  background-color: white;
-  border: 1px solid #e6d8a5;
-  border-radius: 16px;
   padding: 20px;
   width: 300px;
   margin: 10px;
@@ -82,6 +79,8 @@ a:focus {
 
 .card-body {
   width: 250px;
+  background-color: white;
+  border: 1px solid #e6d8a5;
 }
 
 .img-fluid {
@@ -140,6 +139,13 @@ input.form-control {
   background-color: #faebc1;
   transform: scale(1.1);
 }
+
+.card {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
 
 
 /* Responsive Layout */
