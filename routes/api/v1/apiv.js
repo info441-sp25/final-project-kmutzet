@@ -7,6 +7,9 @@ import usersRouter from './users.js';
 import commentRouter from './controllers/comments.js';
 import userInfoRouter from './controllers/userInfoController.js';
 
+console.log("✅ apiv.js router loaded");
+
+
 router.use('/posts', postsRouter);
 router.use('/urls', urlsRouter);
 router.use('/users', usersRouter);

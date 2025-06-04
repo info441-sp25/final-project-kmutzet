@@ -44,14 +44,13 @@ As developers, we’re excited about this project because it:
 | Priority | User Story                                                                 | Technical Implementation |
 |----------|-----------------------------------------------------------------------------|---------------------------|
 | P0       | As a user, I want to create an account and log in/out                      | Azure Authentication + MongoDB |
-| P0       | As a user, I want to create new boards to organize my saved content        | POST to Express API → MongoDB |
-| P0       | As a user, I want to upload and save an image with a caption and board     | Upload to Cloudinary, store URL + metadata in MongoDB |
-| P0       | As a user, I want to view my boards and the content I’ve saved             | GET request → MongoDB |
-| P1       | As a user, I want to browse public boards from other users                 | Query MongoDB for public boards |
-| P1       | As a user, I want to like and comment on images or boards                  | MongoDB fields + POST endpoints |
+| P0       | As a user, I want to create new posts to organize my saved content        | POST to Express API → MongoDB |
+| P0       | As a user, I want to upload and save an image with a caption     | Upload to Cloudinary, store URL + metadata in MongoDB |
+| P0       | As a user, I want to view my posts and the content I’ve saved/liked             | GET request → MongoDB |
+| P1       | As a user, I want to browse posts from other users                 | Query MongoDB for posts by username |
+| P1       | As a user, I want to like and comment on posts                | MongoDB fields + POST endpoints |
 | P1       | As a user, I want to edit or delete my boards and saved content            | PUT and DELETE routes with auth checks |
 | P2       | As a user, I want to search for boards or content by keyword or tag        | MongoDB text search |
-| P2       | As a user, I want to follow users and see their new boards on my feed      | Simple follow schema + feed endpoint |
 
 ---
 ### Available Endpoints

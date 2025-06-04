@@ -4,6 +4,14 @@ var router = express.Router();
 
 import getURLPreview from "../utils/urlPreviews.js";
 
+console.log("✅ posts.js loaded");
+
+
+router.put("/test", (req, res) => {
+  console.log("✅ Test PUT /test reached!");
+  res.json({ message: "PUT /test works!" });
+});
+
 router.post("/", async function (req, res, next) {   
     if (req.session.isAuthenticated) {
         try {
@@ -72,6 +80,42 @@ router.post("/unlike", async function (req, res, next) {
       return res.status(401).json({ status: "error", error: "not logged in" });
   }
 })
+
+router.put("/", async function (req, res, next) {
+  console.log("PUT /api/v1/posts called");
+  console.log("Request body:", req.body);
+
+  if (!req.session.isAuthenticated) {
+    console.log("User not authenticated");
+    return res.status(401).json({ status: "error", error: "Not logged in" });
+  }
+
+  try {
+    const { postID, description } = req.body;
+    console.log(`Updating post with ID: ${postID}, new description: ${description}`);
+
+    const post = await req.models.Post.findById(postID);
+    if (!post) {
+      console.log("Post not found");
+      return res.status(404).json({ status: "error", error: "Post not found" });
+    }
+
+    if (post.username !== req.session.account.username) {
+      console.log("Unauthorized edit attempt by:", req.session.account.username);
+      return res.status(403).json({ status: "error", error: "Unauthorized to edit this post" });
+    }
+
+    post.description = description;
+    await post.save();
+
+    console.log("Post updated successfully");
+    res.json({ status: "success" });
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).json({ status: "error", error: "Server error during update" });
+  }
+});
+
 
 
 router.get("/", async function (req, res, next) {

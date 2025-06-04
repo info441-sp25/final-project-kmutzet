@@ -46,14 +46,16 @@ async function loadPosts(){
     ).join("") || "";
 
     return `
-    <div class="card mb-4 shadow-sm position-relative">
-        <div class="card-body">
-            <div class="delete-row d-flex justify-content-end">
-                ${postInfo.username === myIdentity 
-                        ? `<button class="delete-button" onclick='deletePost("${postInfo.id}")'>&times;</button>` 
-                        : ""}
-            </div>
-            <div>
+        <div class="card mb-4 shadow-sm position-relative">
+            <div class="card-body">
+                <div class="delete-row d-flex justify-content-end">
+                ${postInfo.username === myIdentity
+                    ? `<button class="btn btn-sm btn-outline-primary me-auto" id="edit-btn-${postInfo.id}" onclick='toggleEdit("${postInfo.id}")'>Edit</button>
+                    <button class="delete-button" onclick='deletePost("${postInfo.id}")'>&times;</button>`
+                    : ""}
+                </div>
+
+                <div>
                 <div class="image-container d-flex justify-content-center mb-2">
                     ${imageHTML}
                 </div>
@@ -62,7 +64,8 @@ async function loadPosts(){
                     <a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a>, ${escapeHTML(postInfo.created_date)}
                 </p>
                 <div class="d-flex justify-content-between align-items-start">
-                    <p class="card-text flex-grow-1 me-2">${escapeHTML(postInfo.description)}</p>
+                    <p class="card-text flex-grow-1 me-2" id="desc-text-${postInfo.id}">${escapeHTML(postInfo.description)}</p>
+                    <textarea class="form-control d-none" id="desc-edit-${postInfo.id}" style="flex-grow:1; resize:none;" rows="3">${escapeHTML(postInfo.description)}</textarea>
                 </div>
                 <div class="d-flex align-items-center">
                     <span class="me-2" title="${postInfo.likes ? escapeHTML(postInfo.likes.join(", ")) : ""}">
@@ -121,6 +124,72 @@ async function deletePost(postID) {
         alert("An unexpected error occurred.");
     }
 }
+
+function toggleEdit(postID) {
+  const descText = document.getElementById(`desc-text-${postID}`);
+  const descEdit = document.getElementById(`desc-edit-${postID}`);
+  const editBtn = document.getElementById(`edit-btn-${postID}`);
+
+  if (editBtn.textContent === "Edit") {
+    // Switch to editing mode
+    descText.classList.add("d-none");
+    descEdit.classList.remove("d-none");
+    editBtn.textContent = "Save";
+  } else {
+    // Save the new description
+    const newDesc = descEdit.value.trim();
+
+    if (newDesc.length === 0) {
+      alert("Description cannot be empty.");
+      return;
+    }
+
+    updatePost(postID, newDesc);
+  }
+}
+
+async function updatePost(postID, newDescription) {
+  try {
+    console.log("Sending PUT request to update post", postID, newDescription);
+
+    const res = await fetch(`/api/v1/posts`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postID: postID, description: newDescription })
+    });
+
+    console.log("Response status:", res.status);
+
+    // If response is not ok, log the raw text to see the response body
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Non-OK response body:", text);
+      alert(`Failed to update post: Server responded with status ${res.status}`);
+      return;
+    }
+
+    const result = await res.json();
+    console.log("Parsed response JSON:", result);
+
+    if (result.status === "success") {
+      document.getElementById(`desc-text-${postID}`).textContent = newDescription;
+      document.getElementById(`desc-text-${postID}`).classList.remove("d-none");
+
+      document.getElementById(`desc-edit-${postID}`).classList.add("d-none");
+
+      document.getElementById(`edit-btn-${postID}`).textContent = "Edit";
+
+      alert("Post updated successfully.");
+    } else {
+      alert("Failed to update post: " + result.error);
+    }
+  } catch (error) {
+    console.error("Error updating post:", error);
+    alert("An unexpected error occurred while updating the post.");
+  }
+}
+
+
 
 
 

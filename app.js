@@ -17,6 +17,9 @@ const secret = process.env.SECRET_KEY;
 import v1Router from './routes/api/v1/apiv.js';
 import usersRouter from './routes/api/v1/users.js';
 
+import postsRouterDirect from './routes/api/v1/controllers/posts.js';
+
+
 const authConfig = {
     auth: {
         clientId: "2833ad02-2877-4752-a4c9-a6c485ed4be9",
@@ -77,9 +80,23 @@ app.get('/signout', (req, res, next) => {
 })
 
 
-app.use('/api/v1/', v1Router);
+app.use('/api/v1', v1Router);
+app.use('/debug-posts', postsRouterDirect);
 
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(authProvider.interactionErrorHandler());
 
+// Catch-all route for debugging unhandled paths
+app.use((req, res, next) => {
+  console.warn(`❌ 404 Not Found: ${req.method} ${req.originalUrl}`);
+  if (req.accepts('json')) {
+    res.status(404).json({ error: 'Not Found', path: req.originalUrl });
+  } else {
+    res.status(404).send(`<pre>Cannot ${req.method} ${req.originalUrl}</pre>`);
+  }
+});
+
+
+// Add this after your other `app.use` calls:
 export default app;

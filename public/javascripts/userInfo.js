@@ -82,19 +82,21 @@ async function loadUserInfoPosts(username){
         return `
         <div class="post mb-4">
             <div class="card-body">
-                <div class="image-container d-flex justify-content-center mb-2">
+            <div class="image-container d-flex justify-content-center mb-2">
                 ${imageHTML}
-                </div>
-                <p>${escapeHTML(postInfo.description)}</p>
-                <div>
+            </div>
+            <!-- THIS line must have the id with postID -->
+            <p id="post-desc-${postInfo.id}">${escapeHTML(postInfo.description)}</p>
+            <div>
                 <a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a>, ${escapeHTML(postInfo.created_date)}
-                </div>
-                <div class="post-interactions mt-2">
+            </div>
+            <div class="post-interactions mt-2">
                 <span title="${postInfo.likes ? escapeHTML(postInfo.likes.join(", ")) : ""}">
-                    ${postInfo.likes ? postInfo.likes.length : 0} likes
+                ${postInfo.likes ? postInfo.likes.length : 0} likes
                 </span>
+                <button onclick='editPost("${postInfo.id}")' class="${postInfo.username == myIdentity ? "" : "d-none"} ms-3 btn btn-sm btn-secondary">Edit</button>
                 <button onclick='deletePost("${postInfo.id}")' class="${postInfo.username == myIdentity ? "" : "d-none"} ms-3 btn btn-sm btn-danger">Delete</button>
-                </div>
+            </div>
             </div>
         </div>`;
     }).join("\n");
@@ -138,6 +140,37 @@ async function loadLikedPosts(username) {
     }).join("\n");
 
     document.getElementById("liked_posts_box").innerHTML = `<div class="posts-container">${postsHtml}</div>`;
+}
+
+async function editPost(postID) {
+console.log('Looking for:', `post-desc-${postID}`);
+  const descP = document.getElementById(`post-desc-${postID}`);
+  const currentDesc = descP.innerText;
+
+  // Replace the paragraph with a textarea + save button for simplicity
+  descP.innerHTML = `
+    <textarea id="edit-textarea-${postID}" class="form-control mb-2">${escapeHTML(currentDesc)}</textarea>
+    <button class="btn btn-sm btn-primary" onclick="savePostEdit('${postID}')">Save</button>
+    <button class="btn btn-sm btn-secondary ms-2" onclick="cancelPostEdit('${postID}', '${escapeHTML(currentDesc)}')">Cancel</button>
+  `;
+}
+
+async function savePostEdit(postID) {
+  const newText = document.getElementById(`edit-textarea-${postID}`).value;
+
+  let responseJson = await fetchJSON(`api/${apiVersion}/posts`, {
+    method: "PUT",  // assuming your API supports PUT for editing
+    body: { postID: postID, description: newText }
+  });
+
+  // Reload posts or update the UI accordingly
+  loadUserInfo();
+}
+
+function cancelPostEdit(postID, originalText) {
+    console.log('Looking for:', `post-desc-${postID}`);
+  const descP = document.getElementById(`post-desc-${postID}`);
+  descP.innerText = originalText;
 }
 
 
