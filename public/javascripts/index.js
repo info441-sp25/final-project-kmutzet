@@ -36,64 +36,10 @@ async function uploadImageToCloudinary(file) {
   return data.secure_url; // This is the public URL of the image
 }
 
-async function loadPosts(){
+async function loadPosts() {
     document.getElementById("posts_box").innerText = "Loading...";
-    let postsJson = await fetchJSON(`api/${apiVersion}/posts`)
-    
-    let postsHtml = postsJson.map(postInfo => {
-    const imageHTML = postInfo.imageURLs?.map(url => 
-        `<img src="${escapeHTML(url)}" alt="post image" class="img-fluid mb-2">`
-    ).join("") || "";
-
-    return `
-        <div class="card mb-4 shadow-sm position-relative">
-            <div class="card-body">
-                <div class="delete-row d-flex justify-content-end">
-                ${postInfo.username === myIdentity
-                    ? `<button class="btn btn-sm btn-outline-primary me-auto" id="edit-btn-${postInfo.id}" onclick='toggleEdit("${postInfo.id}")'>Edit</button>
-                    <button class="delete-button" onclick='deletePost("${postInfo.id}")'>&times;</button>`
-                    : ""}
-                </div>
-
-                <div>
-                <div class="image-container d-flex justify-content-center mb-2">
-                    ${imageHTML}
-                </div>
-                ${postInfo.htmlPreview || ""}
-                <p class="text-muted small">
-                    <a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a>, ${escapeHTML(postInfo.created_date)}
-                </p>
-                <div class="d-flex justify-content-between align-items-start">
-                    <p class="card-text flex-grow-1 me-2" id="desc-text-${postInfo.id}">${escapeHTML(postInfo.description)}</p>
-                    <textarea class="form-control d-none" id="desc-edit-${postInfo.id}" style="flex-grow:1; resize:none;" rows="3">${escapeHTML(postInfo.description)}</textarea>
-                </div>
-                <div class="d-flex align-items-center">
-                    <span class="me-2" title="${postInfo.likes ? escapeHTML(postInfo.likes.join(", ")) : ""}">
-                        ${postInfo.likes ? `${postInfo.likes.length}` : 0} likes
-                    </span>
-
-                    <span class="${myIdentity ? '' : 'd-none'}">
-                        ${postInfo.likes && postInfo.likes.includes(myIdentity)
-                        ? `<button class="btn btn-sm btn-outline-danger" onclick='unlikePost("${postInfo.id}")'>&#x2665;</button>`
-                        : `<button class="btn btn-sm btn-outline-secondary" onclick='likePost("${postInfo.id}")'>&#x2661;</button>`}
-                    </span>
-                </div>
-
-                <button class="btn btn-link mt-2" onclick='toggleComments("${postInfo.id}")'>View/Hide comments</button>
-                <div id='comments-box-${postInfo.id}' class="comments-box d-none">
-                    <button class="btn btn-sm btn-secondary mb-2" onclick='refreshComments("${postInfo.id}")'>Refresh comments</button>
-                    <div id='comments-${postInfo.id}'></div>
-                    <div class="new-comment-box ${myIdentity ? "" : "d-none"}">
-                        <textarea class="form-control mb-2" id="new-comment-${postInfo.id}" placeholder="Write a comment..."></textarea>
-                        <button class="btn btn-primary btn-sm" onclick='postComment("${postInfo.id}")'>Post Comment</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>`;
-}).join("");
-
-    document.getElementById("posts_box").innerHTML = postsHtml;
+    let postsJson = await fetchJSON(`api/${apiVersion}/posts`);
+    renderPosts(postsJson);
 }
 
 function makeUrlPreview(imageUrl) {
@@ -148,6 +94,98 @@ function toggleEdit(postID) {
   }
 }
 
+async function searchPosts() {
+    const query = document.getElementById("searchInput").value.trim();
+    if (!query) {
+        alert("Please enter a search term.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`api/${apiVersion}/posts/search?query=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+        const postsJson = await response.json();
+
+        if (postsJson.length === 0) {
+            // No results: load all posts instead
+            await loadPosts();
+        } else {
+            renderPosts(postsJson);
+        }
+        console.log(postsJson);
+
+    } catch (error) {
+        console.error("Error fetching search results:", error);
+        alert("An error occurred while searching. Please try again.");
+    }
+}
+
+
+function renderPosts(postsJson) {
+    let postsHtml = postsJson.map(postInfo => {
+        const imageHTML = postInfo.imageURLs?.map(url => {
+            console.log("Rendering image URL:", url); // Inspect each URL
+            return `<img src="${escapeHTML(url)}" alt="post image" class="img-fluid mb-2">`;
+        }).join("") || "";
+
+
+        return `
+            <div class="card mb-4 shadow-sm position-relative">
+                <div class="card-body">
+                    <div class="delete-row d-flex justify-content-end">
+                    ${postInfo.username === myIdentity
+                        ? `<button class="custom-refresh-button me-auto" id="edit-btn-${postInfo.id}" onclick='toggleEdit("${postInfo.id}")'>Edit</button>
+                        <button class="delete-button" onclick='deletePost("${postInfo.id}")'>&times;</button>`
+                        : ""}
+                    </div>
+
+                    <div>
+                    <div class="image-container d-flex justify-content-center mb-2">
+                        ${imageHTML}
+                    </div>
+                    <p class="text-muted small">
+                        <a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a>, ${escapeHTML(postInfo.created_date)}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <p class="card-text flex-grow-1 me-2" id="desc-text-${postInfo.id}">${escapeHTML(postInfo.description)}</p>
+                        <textarea class="form-control d-none" id="desc-edit-${postInfo.id}" style="flex-grow:1; resize:none;" rows="3">${escapeHTML(postInfo.description)}</textarea>
+                    </div>
+                   <div id="tags-container-${postInfo.id}" class="mb-3">
+                        ${postInfo.tags && postInfo.tags.length > 0 
+                            ? postInfo.tags.map(tag => `<span class="badge badge-yellow me-1">${escapeHTML(tag)}</span>`).join('') 
+                            : ''}
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2" title="${postInfo.likes ? escapeHTML(postInfo.likes.join(", ")) : ""}">
+                            ${postInfo.likes ? `${postInfo.likes.length}` : 0} likes
+                        </span>
+
+                        <span class="${myIdentity ? '' : 'd-none'}">
+                            ${postInfo.likes && postInfo.likes.includes(myIdentity)
+                            ? `<button class="btn btn-sm btn-outline-danger" onclick='unlikePost("${postInfo.id}")'>&#x2665;</button>`
+                            : `<button class="btn btn-sm btn-outline-secondary" onclick='likePost("${postInfo.id}")'>&#x2661;</button>`}
+                        </span>
+                    </div>
+
+                    <button class="btn btn-link mt-2" onclick='toggleComments("${postInfo.id}")'>View/Hide comments</button>
+                    <div id='comments-box-${postInfo.id}' class="comments-box d-none">
+                        <button class="btn btn-sm btn-secondary mb-2" onclick='refreshComments("${postInfo.id}")'>Refresh comments</button>
+                        <div id='comments-${postInfo.id}'></div>
+                        <div class="new-comment-box ${myIdentity ? "" : "d-none"}">
+                            <textarea class="form-control mb-2" id="new-comment-${postInfo.id}" placeholder="Write a comment..."></textarea>
+                            <button class="btn btn-primary btn-sm" onclick='postComment("${postInfo.id}")'>Post Comment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join("");
+
+    document.getElementById("posts_box").innerHTML = postsHtml;
+}
+
+
 async function updatePost(postID, newDescription) {
   try {
     console.log("Sending PUT request to update post", postID, newDescription);
@@ -194,7 +232,8 @@ async function updatePost(postID, newDescription) {
 
 
 async function postUrl() {
-  const description = document.getElementById("descriptionInput").value;
+  const description = document.getElementById("descriptionInput").value.trim();
+  const tagsInput = document.getElementById("tagsInput").value.trim();
   const imageFile = document.getElementById("imageInput").files[0];
 
   if (!imageFile || !description) {
@@ -202,20 +241,24 @@ async function postUrl() {
     return;
   }
 
+  const tags = tagsInput
+    ? tagsInput.split(",").map(tag => tag.trim()).filter(tag => tag.length > 0)
+    : [];
+
   try {
     const imageUrl = await uploadImageToCloudinary(imageFile);
     let htmlPreview = makeUrlPreview(imageUrl);
     const response = await fetch(`api/${apiVersion}/posts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            description: description,
-            htmlPreview: htmlPreview,
-            imageURLs: [imageUrl],
-            boardID: "default",
-        }),
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        description: description,
+        htmlPreview: htmlPreview,
+        imageURLs: [imageUrl],
+        boardID: "default",
+        tags: tags, 
+      }),
     });
-
 
     const data = await response.json();
     if (data.status === "success") {
@@ -229,6 +272,7 @@ async function postUrl() {
     document.getElementById("postStatus").textContent = "❌ Error uploading image.";
   }
 }
+
 
 
 

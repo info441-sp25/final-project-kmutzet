@@ -94,8 +94,8 @@ async function loadUserInfoPosts(username){
                 <span title="${postInfo.likes ? escapeHTML(postInfo.likes.join(", ")) : ""}">
                 ${postInfo.likes ? postInfo.likes.length : 0} likes
                 </span>
-                <button onclick='editPost("${postInfo.id}")' class="${postInfo.username == myIdentity ? "" : "d-none"} ms-3 btn btn-sm btn-secondary">Edit</button>
-                <button onclick='deletePost("${postInfo.id}")' class="${postInfo.username == myIdentity ? "" : "d-none"} ms-3 btn btn-sm btn-danger">Delete</button>
+                <button onclick='editPost("${postInfo.id}")' class="${postInfo.username == myIdentity ? "" : "d-none"} ms-2 btn btn-sm btn-orange">Edit</button>
+                <button onclick='deletePost("${postInfo.id}")' class="${postInfo.username == myIdentity ? "" : "d-none"} ms-2 btn btn-red">Delete</button>
             </div>
             </div>
         </div>`;

@@ -21,20 +21,20 @@
   <div class="container">
     <div id="errorInfo" class="alert alert-danger fade show" role="alert" style="display: none"></div>
 
-    <h2 class="mb-4">User Info: <span id="username-span" class="text-primary"></span></h2>
+    <h2 class="mb-4">User Info: <span id="username-span" class="text-custom"></span></h2>
 
     <div id="user_info_div" class="mb-4">
       <h5>Profile Bio</h5>
-      <p class="text-muted"><span id="profile-bio-display"></span></p>
+      <p class="text-small"><span id="profile-bio-display"></span></p>
     </div>
 
     <div id="user_info_new_div" class="d-none mb-5">
       <h4>Update Your Bio</h4>
-      <div class="mb-3">
+      <div class="custom-description mb-3">
         <label for="profile-bio" class="form-label">Bio</label>
-        <input type="text" id="profile-bio" class="form-control" placeholder="Tell us about yourself...">
+        <input type="text" id="profile-bio" class="custom-description-input" placeholder="Tell us about yourself...">
       </div>
-      <button class="btn btn-primary" onclick="saveUserInfo()">Save Bio</button>
+      <button class="btn btn-orange" onclick="saveUserInfo()">Save Bio</button>
     </div>
 
     <svg viewBox="0 0 1200 40" preserveAspectRatio="none" class="squiggly-divider my-5">

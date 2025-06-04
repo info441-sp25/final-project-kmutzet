@@ -112,6 +112,14 @@ a:focus {
   outline: none;
 }
 
+.badge-yellow {
+  background-color: #EDB63E; 
+  color: white;
+  border-radius: 1rem; 
+  padding: 0.35em 0.65em; 
+  font-weight: 600; 
+}
+
 .card-body {
   width: 250px;
   background-color: white;
@@ -194,10 +202,6 @@ input.form-control {
   box-shadow: none;
 }
 
-.card-text {
-  padding-bottom: 10px;
-}
-
 .custom-upload {
   position: relative;
   width: 100%;
@@ -218,6 +222,11 @@ input.form-control {
   font-weight: 500;
 }
 
+.custom-upload-input::placeholder {
+  color: #b98a00;
+  opacity: 0.8;
+}
+
 .custom-upload-button {
   position: absolute;
   right: 3px;
@@ -227,18 +236,76 @@ input.form-control {
   color: white;
   padding: 0 16px;
   border-radius: 100px;
-  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  outline: none;
 }
+
+.btn-orange {
+  background-color: #ED8C00;
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-orange:hover {
+  background-color: #CC5D00;
+  color: white;
+}
+
+.btn-red {
+  background-color: #992409;
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 0.4rem 0.8rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.2s ease;
+}
+
+.btn-red:hover {
+  background-color: #751A06;
+  color: white;
+}
+
 
 .custom-upload-button:hover {
   background-color: #d4a52b;
 }
 
+.custom-refresh-button {
+  background-color: #8b6b00; /* Brown color */
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.custom-refresh-button:hover {
+  background-color: #a07d00; /* Slightly lighter brown on hover */
+}
+
+.text-custom {
+  color: #ED8C00;
+}
+
+.text-small {
+  color: #E99F00;
+}
 
 .custom-description {
   max-width: 600px;

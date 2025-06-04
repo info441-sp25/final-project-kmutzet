@@ -8,6 +8,12 @@ async function main() {
     await mongoose.connect('mongodb+srv://kmuret:passworddd@cluster0.o9sjsfo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
     console.log('Connected to MongoDB');
 
+    await mongoose.connection.db.collection('posts').createIndex({
+        description: 'text',
+        tags: 'text',
+    });
+
+
     //schema
     const postSchema = new mongoose.Schema({
         mediaUrl: String,
@@ -26,7 +32,11 @@ async function main() {
         htmlPreview: {
             type: String,
             default: '',
-        }
+        },
+        tags: {
+            type: [String],
+            default: [],
+        },
     });
 
 

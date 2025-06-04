@@ -19,14 +19,24 @@ router.post("/", async function (req, res, next) {
             console.log("Request description is " + req.body.description);
             console.log("Request username is " + req.session.account.username);
 
+            let tagsArray = [];
+            if (Array.isArray(req.body.tags)) {
+                tagsArray = req.body.tags;
+            } else if (typeof req.body.tags === 'string') {
+                tagsArray = req.body.tags.split(/[\s,]+/).filter(Boolean);
+            }
+
             const newPost = new req.models.Post({
                 imageURLs: req.body.imageURLs, 
                 description: req.body.description,
                 htmlPreview: req.body.htmlPreview,
                 username: req.session.account.username,
                 boardID: req.body.boardID,
+                tags: tagsArray,
                 created_date: new Date(),
             });
+
+            console.log("Request tags:", req.body.tags);
 
             console.log("New post is " + newPost);
 
@@ -142,6 +152,7 @@ router.get("/", async function (req, res, next) {
                         id: post._id,
                         created_date: post.created_date,
                         likes: post.likes,
+                        tags: post.tags,
                     };
                 } catch (error) {
                     console.log("Error making the post is" + error);
@@ -156,6 +167,38 @@ router.get("/", async function (req, res, next) {
         res.status(500).json({ status: "error", error: error.message });
     }
 });
+
+router.get('/search', async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query || query.trim() === '') {
+      return res.status(400).json({ error: 'Query parameter is required' });
+    }
+
+    // Split query by spaces or commas, trim whitespace, remove empty strings
+    const keywords = query
+      .split(/[\s,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    // Mongo text search only supports a string, so join back for $text
+    const searchString = keywords.join(' ');
+
+    // Search using MongoDB text index on description and tags
+    const posts = await req.models.Post.find(
+      { $text: { $search: searchString } },
+      { score: { $meta: 'textScore' } }
+    )
+      .sort({ score: { $meta: 'textScore' }, created_date: -1 })
+      .limit(50);
+
+    res.json(posts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 router.delete("/", async function (req, res, next) {
