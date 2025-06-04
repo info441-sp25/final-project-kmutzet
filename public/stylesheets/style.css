@@ -2,47 +2,82 @@
 body {
   padding-top: 90px;
   font: 16px "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #fffbee; /* Soft warm background like honey */
+  background-color: #F8EAC5; /* Soft warm background like honey */
   color: #333;
   margin: 0;
 }
 
 /* Navbar */
-.navbar {
+.bg-light {
+  background-color: transparent !important;
+}
+
+.custom-navbar {
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 999;
-  border-bottom: 1px solid #ddd;
-  background-color: #fff8dc; /* light honey cream */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #e6c87d;
+  background-color: #EDB63E !important; /* dark honey */
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.custom-navbar .navbar-brand {
+  color: white !important;
+}
+
+.custom-navbar .navbar-brand:hover {
+  color: #F5C865 !important; /* lighter honey on hover */
+}
+
+.squiggly-divider {
+  width: 100%;
+  height: 20px;
+  display: block;
+}
+
 
 /* Typography */
 h1, h2, h3, h4, h5 {
   font-weight: 600;
-  color: #5a4300; /* Rich dark gold */
+  color: #5a4300;
 }
 
 a {
-  color: #d4a017; /* Warm golden link */
+  color: #FFDF86;
   text-decoration: none;
+}
+
+.creative-tagline {
+  font-family: 'Pacifico', cursive;
+  color: #8b6b00; 
+  font-size: 1.25rem;
 }
 
 a:hover,
 a:focus {
   text-decoration: underline;
-  color: #b8860b; /* Deeper honey color */
+  color: #b8860b; 
   outline: none;
 }
 
 /* Posts Layout */
 .posts-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 0fr));
   gap: 1.5rem;
 }
 
+.card-body a, .post a {
+  color: #5a4300; /* Rich dark gold */
+  font-weight: 600;
+}
+
+.card-body a:hover, .post a:hover {
+  color: #8b5e00; /* Deeper tone on hover */
+  text-decoration: underline;
+}
 
 /* Individual Post Card */
 .post {
@@ -81,10 +116,22 @@ a:focus {
   width: 250px;
   background-color: white;
   border: 1px solid #e6d8a5;
+  border-radius: 16px;
+}
+
+.delete-row {
+  position: relative;
+  padding-bottom: 16px;
 }
 
 .img-fluid {
   max-width: 200px;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Comments Section */
@@ -140,10 +187,85 @@ input.form-control {
   transform: scale(1.1);
 }
 
+
 .card {
   background-color: transparent;
   border: none;
   box-shadow: none;
+}
+
+.card-text {
+  padding-bottom: 10px;
+}
+
+.custom-upload {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 1rem;
+}
+
+.custom-upload-input {
+  width: 100%;
+  border: 1px solid #EDB63E;
+  border-radius: 100px;
+  padding: 10px 110px 10px 20px;
+  line-height: 1;
+  box-sizing: border-box;
+  outline: none;
+  background-color: #fffefa;
+  color: #5a4300;
+  font-weight: 500;
+}
+
+.custom-upload-button {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  bottom: 3px;
+  background-color: #EDB63E;
+  color: white;
+  padding: 0 16px;
+  border-radius: 100px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-upload-button:hover {
+  background-color: #d4a52b;
+}
+
+
+.custom-description {
+  max-width: 600px;
+  margin-bottom: 1rem;
+}
+
+.custom-description-input {
+  width: 100%;
+  border: 1px solid #EDB63E;
+  border-radius: 100px;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  outline: none;
+  background-color: #fffefa;
+  color: #5a4300;
+  font-weight: 500;
+  transition: border-color 0.2s ease;
+}
+
+.custom-description-input::placeholder {
+  color: #b98a00;
+  opacity: 0.8;
+}
+
+.custom-description-input:focus {
+  border-color: #d4a52b;
+  box-shadow: 0 0 0 0.15rem rgba(237, 182, 62, 0.25);
 }
 
 

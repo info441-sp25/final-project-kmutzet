@@ -33,6 +33,47 @@ router.post("/", async function (req, res, next) {
     }
 });
 
+router.post("/like", async function (req, res, next) {  
+  if (req.session.isAuthenticated) {
+      try {
+          const username = req.session.account.username;
+          const post = await req.models.Post.findById(req.body.postID);
+
+          if (!post.likes.includes(username)) {
+              post.likes.push(username);
+              await post.save();
+              res.json({ status: "success" });
+          }
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ status: "error", error: error.message });
+      }
+  } else {
+      return res.status(401).json({ status: "error", error: "not logged in" });
+  }
+})
+
+router.post("/unlike", async function (req, res, next) {
+  if (req.session.isAuthenticated) {
+      try {
+          const username = req.session.account.username;
+          const post = await req.models.Post.findById(req.body.postID);
+
+          if (post.likes.includes(username)) {
+              post.likes = post.likes.filter((like) => like !== username);
+              await post.save();
+              res.json({ status: "success" });
+          }
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ status: "error", error: error.message });
+      }
+  } else {    
+      return res.status(401).json({ status: "error", error: "not logged in" });
+  }
+})
+
+
 router.get("/", async function (req, res, next) {
     try {
         let query = {};

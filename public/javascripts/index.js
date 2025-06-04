@@ -8,6 +8,15 @@ async function init(){
 
     await loadIdentity();
     loadPosts();
+
+    document.getElementById('imageInput').addEventListener('change', function () {
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        if (this.files.length > 0) {
+            fileNameDisplay.value = this.files[0].name;
+        } else {
+            fileNameDisplay.value = "No file chosen";
+        }
+    });
 }
 
 
@@ -37,39 +46,44 @@ async function loadPosts(){
     ).join("") || "";
 
     return `
-    <div class="card mb-4 shadow-sm">
+    <div class="card mb-4 shadow-sm position-relative">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-                <p class="card-text flex-grow-1 me-2">${escapeHTML(postInfo.description)}</p>
+            <div class="delete-row d-flex justify-content-end">
                 ${postInfo.username === myIdentity 
-                    ? `<button class="delete-button" onclick='deletePost("${postInfo.id}")'>&times;</button>` 
-                    : ""}
+                        ? `<button class="delete-button" onclick='deletePost("${postInfo.id}")'>&times;</button>` 
+                        : ""}
             </div>
-            ${imageHTML}
-            ${postInfo.htmlPreview || ""}
-            <p class="text-muted small">
-                <a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a>, ${escapeHTML(postInfo.created_date)}
-            </p>
+            <div>
+                <div class="image-container d-flex justify-content-center mb-2">
+                    ${imageHTML}
+                </div>
+                ${postInfo.htmlPreview || ""}
+                <p class="text-muted small">
+                    <a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a>, ${escapeHTML(postInfo.created_date)}
+                </p>
+                <div class="d-flex justify-content-between align-items-start">
+                    <p class="card-text flex-grow-1 me-2">${escapeHTML(postInfo.description)}</p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="me-2" title="${postInfo.likes ? escapeHTML(postInfo.likes.join(", ")) : ""}">
+                        ${postInfo.likes ? `${postInfo.likes.length}` : 0} likes
+                    </span>
 
-            <div class="d-flex align-items-center">
-                <span class="me-2" title="${postInfo.likes ? escapeHTML(postInfo.likes.join(", ")) : ""}">
-                    ${postInfo.likes ? `${postInfo.likes.length}` : 0} likes
-                </span>
+                    <span class="${myIdentity ? '' : 'd-none'}">
+                        ${postInfo.likes && postInfo.likes.includes(myIdentity)
+                        ? `<button class="btn btn-sm btn-outline-danger" onclick='unlikePost("${postInfo.id}")'>&#x2665;</button>`
+                        : `<button class="btn btn-sm btn-outline-secondary" onclick='likePost("${postInfo.id}")'>&#x2661;</button>`}
+                    </span>
+                </div>
 
-                <span class="${myIdentity ? '' : 'd-none'}">
-                    ${postInfo.likes && postInfo.likes.includes(myIdentity)
-                    ? `<button class="btn btn-sm btn-outline-danger" onclick='unlikePost("${postInfo.id}")'>&#x2665;</button>`
-                    : `<button class="btn btn-sm btn-outline-secondary" onclick='likePost("${postInfo.id}")'>&#x2661;</button>`}
-                </span>
-            </div>
-
-            <button class="btn btn-link mt-2" onclick='toggleComments("${postInfo.id}")'>View/Hide comments</button>
-            <div id='comments-box-${postInfo.id}' class="comments-box d-none">
-                <button class="btn btn-sm btn-secondary mb-2" onclick='refreshComments("${postInfo.id}")'>Refresh comments</button>
-                <div id='comments-${postInfo.id}'></div>
-                <div class="new-comment-box ${myIdentity ? "" : "d-none"}">
-                    <textarea class="form-control mb-2" id="new-comment-${postInfo.id}" placeholder="Write a comment..."></textarea>
-                    <button class="btn btn-primary btn-sm" onclick='postComment("${postInfo.id}")'>Post Comment</button>
+                <button class="btn btn-link mt-2" onclick='toggleComments("${postInfo.id}")'>View/Hide comments</button>
+                <div id='comments-box-${postInfo.id}' class="comments-box d-none">
+                    <button class="btn btn-sm btn-secondary mb-2" onclick='refreshComments("${postInfo.id}")'>Refresh comments</button>
+                    <div id='comments-${postInfo.id}'></div>
+                    <div class="new-comment-box ${myIdentity ? "" : "d-none"}">
+                        <textarea class="form-control mb-2" id="new-comment-${postInfo.id}" placeholder="Write a comment..."></textarea>
+                        <button class="btn btn-primary btn-sm" onclick='postComment("${postInfo.id}")'>Post Comment</button>
+                    </div>
                 </div>
             </div>
         </div>

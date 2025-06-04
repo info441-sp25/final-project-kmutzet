@@ -14,7 +14,7 @@ async function main() {
         description: String,
         created_date: { type: Date, default: Date.now },
         username: String,
-        likes: [String],
+        likes: [ {type: String}],
         image: {
             public_id: String,
             url: String,
