@@ -2,6 +2,7 @@
 
 **Contributors:** Samuel Shumye, Kate Muret, Joseph Tran
 
+[Link to Deployed Site](https://final-project.katemuret.me)
 ## 📌 Project Description
 
 **InspoNest** is a web-based visual bookmarking and inspiration platform modeled after Pinterest, designed specifically for college students and young creatives. Whether you're seeking ideas for fashion, interior design, art, food, or lifestyle, InspoNest helps you collect, organize, and revisit visual content in a meaningful way.
