@@ -16,7 +16,6 @@ This app fills a gap for users who are overwhelmed by the volume of content onli
 As developers, we’re excited about this project because it:
 - Combines frontend and backend challenges
 - Requires thoughtful UI/UX design
-- Includes features like drag-and-drop reordering and real-time updates
 - Encourages creative expression and visual storytelling
 
 ## 🛠 Technical Description
@@ -25,7 +24,7 @@ As developers, we’re excited about this project because it:
 
 - **Frontend:** React
 - **Backend:** Node.js + Express
-- **Database:** MongoDB (users, boards, images)
+- **Database:** MongoDB (users, posts, etc)
 - **Media Uploads:** Cloudinary (images)
 - **Authentication:** Azure
 - **API Design:** RESTful routes
@@ -49,7 +48,7 @@ As developers, we’re excited about this project because it:
 | P0       | As a user, I want to view my posts and the content I’ve saved/liked             | GET request → MongoDB |
 | P1       | As a user, I want to browse posts from other users                 | Query MongoDB for posts by username |
 | P1       | As a user, I want to like and comment on posts                | MongoDB fields + POST endpoints |
-| P1       | As a user, I want to edit or delete my boards and saved content            | PUT and DELETE routes with auth checks |
+| P1       | As a user, I want to edit or delete my posts       | PUT and DELETE routes with auth checks |
 | P2       | As a user, I want to search for posts by keyword or tag        | MongoDB text search |
 
 ---
@@ -57,16 +56,15 @@ As developers, we’re excited about this project because it:
 
 - `POST /user/register` – Create new user account  
 - `POST /user/login` – Authenticate and return user data  
-- `GET /user/:id/posts` – Get all posts for a user  
-- `POST /boards/create` – Create a new board  
-- `GET /boards/:id` – Retrieve specific board and images  
-- `POST /images/upload` – Upload image (via Cloudinary), link to board  
-- `POST /images/:id/comment` – Add comment to image  
-- `POST /boards/:id/like` – Like a board  
-- `PUT /boards/:id` – Update board title/visibility  
-- `DELETE /boards/:id` – Delete board  
-- `GET /explore` – View public boards  
-- `GET /search?q=tag` – Search boards/images by tag or title  
+- `GET /posts` – Get all posts (or by username or likedBy query param)
+- `POST /posts` – Create a new post  
+- `PUT /posts` – Update an existing post (description)  
+- `DELETE /posts/` – Delete a post  
+- `POST /posts/like` – Like a post  
+- `POST /posts/unlike` – Unlike a post
+- `GET /posts/search?q=term` – Search posts by tags or description
+- `POST /images/upload` – Like a post  
+- `POST /comments` – Add a comment to a post
 
 ---
 
@@ -76,47 +74,40 @@ As developers, we’re excited about this project because it:
 
 ```json
 {
-  "userID": ObjectId,
+  "_id": ObjectId,
   "username": String,
-  "email": String,
-  "passwordHash": String,
-  "bio": String,
-  "followers": [ObjectId],
-  "following": [ObjectId]
+  "profileBio": String,
+  "avatarUrl": String
 }
 ```
 
 ### Posts
 ```json
 {
-  "boardID": ObjectId,
-  "userID": ObjectId,
-  "title": String,
+  "_id": ObjectId,
+  "username": String,
   "description": String,
-  "isPublic": Boolean,
-  "images": [ObjectId],
-  "createdAt": Date
+  "mediaUrl": String,
+  "created_date": Date,
+  "likes": [String],
+  "image": {
+    "public_id": String,
+    "url": String
+  },
+  "imageURLs": [String],
+  "htmlPreview": String,
+  "tags": [String]
 }
 ```
 
-### Images
+### Comments
 ```json
 {
-  "imageID": ObjectId,
-  "boardID": ObjectId,
-  "userID": ObjectId,
-  "imageURL": String,
-  "caption": String,
-  "tags": [String],
-  "likes": [ObjectId],
-  "comments": [
-    {
-      "userID": ObjectId,
-      "comment": String,
-      "timestamp": Date
-    }
-  ],
-  "createdAt": Date
+  "_id": ObjectId,
+  "username": String,
+  "comment": String,
+  "created_date": Date,
+  "post": ObjectId  // references Posts._id
 }
 ```
 
