@@ -77,17 +77,20 @@ router.post("/unlike", async function (req, res, next) {
 router.get("/", async function (req, res, next) {
     try {
         let query = {};
-        if (req.query.username) {
+
+        if (req.query.likedBy) {
+            query.likes = { $in: [req.query.likedBy] };
+        } else if (req.query.username) {
             query.username = req.query.username;
         }
-        
+
+        // If no query params, query = {} returns all posts
+
         const allPosts = await req.models.Post.find(query).sort({ created_date: -1 });
 
         const result = await Promise.all(
-            allPosts.map(async (post) => { 
+            allPosts.map(async (post) => {
                 try {
-                    console.log("post id is " + post._id);
-                    const id = post._id;
                     return {
                         description: post.description,
                         username: post.username,
@@ -102,13 +105,14 @@ router.get("/", async function (req, res, next) {
                 }
             })
         );
-        console.log("Result is " + result);
-        res.status(200).json(result)
+
+        res.status(200).json(result);
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ status: "error", error: error.message });
     }
 });
+
 
 router.delete("/", async function (req, res, next) {
     if (req.session.isAuthenticated) {

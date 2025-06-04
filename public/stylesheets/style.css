@@ -79,7 +79,7 @@ a:focus {
   text-decoration: underline;
 }
 
-/* Individual Post Card */
+/* Individual Post */
 .post {
   padding: 20px;
   width: 300px;
@@ -87,7 +87,7 @@ a:focus {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 4px 8px rgba(218, 165, 32, 0.1); /* golden soft shadow */
+  box-shadow: 0 4px 8px rgba(218, 165, 32, 0.1); 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -267,6 +267,28 @@ input.form-control {
   border-color: #d4a52b;
   box-shadow: 0 0 0 0.15rem rgba(237, 182, 62, 0.25);
 }
+
+
+.form-switch.form-switch-lg .form-check-input {
+  height: 2rem;
+  width: calc(3rem + 0.75rem);
+  border-radius: 4rem;
+}
+
+/* Custom colors */
+/* Unchecked state */
+.form-check-input {
+  background-color: #EDB63E;  
+  border-color: #EDB63E;
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Checked state */
+.form-check-input:checked {
+  background-color: #8b5e00;
+  border-color: #8b5e00;
+}
+
 
 
 

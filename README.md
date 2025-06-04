@@ -7,7 +7,7 @@
 **InspoNest** is a web-based visual bookmarking and inspiration platform modeled after Pinterest, designed specifically for college students and young creatives. Whether you're seeking ideas for fashion, interior design, art, food, or lifestyle, InspoNest helps you collect, organize, and revisit visual content in a meaningful way.
 
 Our primary users are students or early-career creatives who want to:
-- Curate aesthetic boards
+- Curate aesthetic posts
 - Save and categorize inspiring content
 - Discover new trends through a visually engaging platform
 
@@ -26,7 +26,7 @@ As developers, we’re excited about this project because it:
 - **Frontend:** React
 - **Backend:** Node.js + Express
 - **Database:** MongoDB (users, boards, images)
-- **Media Uploads:** Cloudinary
+- **Media Uploads:** Cloudinary (images)
 - **Authentication:** Azure
 - **API Design:** RESTful routes
 
@@ -58,7 +58,7 @@ As developers, we’re excited about this project because it:
 
 - `POST /user/register` – Create new user account  
 - `POST /user/login` – Authenticate and return user data  
-- `GET /user/:id/boards` – Get all boards for a user  
+- `GET /user/:id/posts` – Get all posts for a user  
 - `POST /boards/create` – Create a new board  
 - `GET /boards/:id` – Retrieve specific board and images  
 - `POST /images/upload` – Upload image (via Cloudinary), link to board  
@@ -87,7 +87,7 @@ As developers, we’re excited about this project because it:
 }
 ```
 
-### Boards
+### Posts
 ```json
 {
   "boardID": ObjectId,
